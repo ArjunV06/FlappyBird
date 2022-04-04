@@ -14,6 +14,7 @@ void setup()
     frameRate(60);
     smooth(8);
     pipe = new Pipe(200,5,height/10,40,0,width);
+    //test
     
 
 }
