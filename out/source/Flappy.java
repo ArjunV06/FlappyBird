@@ -17,7 +17,8 @@ public class Flappy extends PApplet {
 Score sb;
 PFont font;
 Bird bird;
-Pipe pipe,pipe1,pipe2,pipe3,pipe4;
+//Pipe pipe;
+PipeManager pipes;
 public void setup()
 {
     
@@ -29,10 +30,11 @@ public void setup()
     
     frameRate(60);
     
-    pipe = new Pipe(200,5,height/10,40,0,width);
-    pipe1 = new Pipe(200,5,height/10,40,0,width-400);
-    pipe2 = new Pipe(200,5,height/10,40,0,width-800);
-    pipe3 = new Pipe(200,5,height/10,40,0,width-1000);
+    //pipe = new Pipe(200,5,height/10,40,0,width);
+    pipes =  new PipeManager(384,width,150,5,height/10,40,0,width);
+
+    //pipes
+    
 
 }
 
@@ -50,14 +52,12 @@ public void draw()
     //rect(width/2,0,100,500);
     
     //rect(width/2,800,100,280);
-    pipe.move();
-    pipe.display();
-    pipe1.move();
-    pipe1.display();
-    pipe2.display();
-    pipe2.move();
-    pipe3.move();
-    pipe3.display();
+    pipes.move();
+    pipes.display();
+    pipes.verticalMove(1);
+    //pipe.move();
+    //pipe.display();
+
     //rect(100,100,100,100);
     sb.display();
     
@@ -138,6 +138,9 @@ class Pipe
     int tempY;
     int remaining;
     int xPos;
+    int startTime;
+    boolean up;
+    boolean go;
 
     Pipe(int gap_, int xSpeed_, int heightMin_, int wid_, int xThreshold_, int xPos_)
     {
@@ -149,7 +152,9 @@ class Pipe
         xThreshold=xThreshold_;
         tempY=0;
         xPos=xPos_;
-        
+        startTime=0;
+        up=true;
+        go=true;
     }
 
     public void move()
@@ -172,12 +177,14 @@ class Pipe
                 while(abs(prevTempY-tempY)>gap*1.5f)
                 {
                     tempY-=PApplet.parseInt(random(100));
+                    //tempY--;
                 }
             else
             {
                 while(abs(prevTempY-tempY)>gap*1.5f)
                 {
                     tempY+=PApplet.parseInt(random(100));
+                    //tempY++;
                 }
             }
             
@@ -193,17 +200,141 @@ class Pipe
 
         
     }
+    //IN PROGRESS, DOES NOT WORK CORRECTLY AT ALL
+    public void verticalMove(int ySpeed)
+    {
+        /*boolean up=true;
+        if(frameCount%120==0)
+        {
+            if(random(1)>0.5)
+            {
+                println("switch");
+                up=true;
+            }
+            else
+            {
+                println("switch");
+                up=false;
+            }
+        }
+      
+
+        
+        */
+
+        
+        if(startTime==0)
+        {
+            startTime=millis();
+        }
+        int currentTime=millis();
+        if(currentTime-startTime>2000)
+        {
+            //println(random(100));
+            println(go,up);
+            if(PApplet.parseInt(random(100))%2==0)
+            {
+                this.up=true;
+            }
+            else
+            {
+                this.up=false;
+            }
+            if(PApplet.parseInt(random(100))%2==0)
+            {
+                this.go=true;
+            }
+            else
+            {
+                this.go=false;
+            }
+            
+            
+            startTime=millis();
+        }
+        
+        if(!up && remaining>height/8 && go)
+        {
+            tempY+=ySpeed;
+            //println("down");
+        }
+        else if(remaining<=height/8)
+        {
+            remaining=500;
+        }
+        else if(up && go)
+        {
+            //println("up");
+            tempY-=ySpeed;
+        }
+        remaining=height-(tempY)-gap;
+        //println(startTime,currentTime);
+    }
 
     public void display()
     {
         
         rect(xPos,0,wid,tempY);
         
-        rect(xPos,height-(remaining/2),wid,remaining);
+        rect(xPos,height-(remaining),wid,remaining);
     }
 }
 
 //method to move x, method to move y with visuals (like factory going up and down)
+class PipeManager
+{
+    ArrayList<Pipe> pipes;
+    int number;
+    int space;
+    int wid;
+    //Pipe quick;
+
+    PipeManager(int space_, int screenWid_, int gap_, int xSpeed_, int heightMin_, int wid_, int xThreshold_, int xPos_)
+    {
+        pipes = new ArrayList<Pipe>();
+        
+        space=space_;
+        
+        wid=screenWid_;
+        number=wid/space;
+        for(int i=0; i<number; i++)
+        {
+            pipes.add(new Pipe(gap_,xSpeed_,heightMin_,wid_,xThreshold_,xPos_+(i*space)));
+        }
+        
+        
+        //quick = new Pipe(gap_,xSpeed_,heightMin_,wid_,xThreshold_,xPos_);
+        
+    }
+
+    public void move()
+    {
+        
+        for(int i = pipes.size()-1; i >= 0; i--)
+        {
+            Pipe quick = pipes.get(i);
+            quick.move();
+        }
+    }
+
+    public void display()
+    {
+        for(int i = pipes.size()-1; i>= 0; i--)
+        {
+            Pipe quick = pipes.get(i);
+            quick.display();
+        }
+    }
+
+    public void verticalMove(int ySpeed)
+    {
+        for(int i = pipes.size()-1; i>= 0; i--)
+        {
+            Pipe quick = pipes.get(i);
+            quick.verticalMove(ySpeed);
+        }
+    }
+}
 class Score
 {
     int xPos;

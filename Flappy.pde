@@ -1,7 +1,8 @@
 Score sb;
 PFont font;
 Bird bird;
-Pipe pipe;
+//Pipe pipe;
+PipeManager pipes;
 void setup()
 {
     
@@ -13,8 +14,10 @@ void setup()
     size(1920,1080);
     frameRate(60);
     smooth(8);
-    pipe = new Pipe(200,5,height/10,40,0,width);
-    //test
+    //pipe = new Pipe(200,5,height/10,40,0,width);
+    pipes =  new PipeManager(384,width,150,5,height/10,40,0,width);
+
+    //pipes
     
 
 }
@@ -33,8 +36,11 @@ void draw()
     //rect(width/2,0,100,500);
     
     //rect(width/2,800,100,280);
-    pipe.move();
-    pipe.display();
+    pipes.move();
+    pipes.display();
+    pipes.verticalMove(1);
+    //pipe.move();
+    //pipe.display();
 
     //rect(100,100,100,100);
     sb.display();
