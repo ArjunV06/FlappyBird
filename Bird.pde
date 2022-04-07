@@ -13,6 +13,7 @@ class Bird
         hei=hei_;
         yVel=0;
         termVel=termVel_;
+        
     }
 
     void display()

@@ -4,6 +4,7 @@ class PipeManager
     int number;
     int space;
     int wid;
+    int originalXpos;
     //Pipe quick;
 
     PipeManager(int space_, int screenWid_, int gap_, int xSpeed_, int heightMin_, int wid_, int xThreshold_, int xPos_)
@@ -11,7 +12,7 @@ class PipeManager
         pipes = new ArrayList<Pipe>();
         
         space=space_;
-        
+        originalXpos=xPos_;
         wid=screenWid_;
         number=wid/space;
         for(int i=0; i<number; i++)
@@ -43,12 +44,38 @@ class PipeManager
         }
     }
 
-    void verticalMove(int ySpeed)
+    void verticalMove(int ySpeed, int freq)
     {
         for(int i = pipes.size()-1; i>= 0; i--)
         {
             Pipe quick = pipes.get(i);
-            quick.verticalMove(ySpeed);
+            quick.verticalMove(ySpeed,freq);
         }
     }
-}
+
+    void reset()
+    {
+        for(int i = pipes.size()-1; i>= 0; i--)
+        {
+            Pipe quick = pipes.get(i);
+            quick.xPos=originalXpos+space*i;
+            
+        }
+    }
+
+    boolean collision(ArrayList<Hitbox> hitboxes)
+    {
+        for(int i = pipes.size()-1; i>= 0; i--)
+        {
+            Pipe quick = pipes.get(i);
+            if(quick.collision(hitboxes))
+            {
+                println("hi");
+                return true;
+            }
+            
+        }
+        return false;
+        
+    }
+}   

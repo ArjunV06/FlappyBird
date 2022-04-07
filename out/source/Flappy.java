@@ -19,10 +19,13 @@ PFont font;
 Bird bird;
 //Pipe pipe;
 PipeManager pipes;
+Hitbox test;
+
+ArrayList<Hitbox> hitboxes;
 public void setup()
 {
     
-    
+    rectMode(CENTER);
     font = createFont("font.ttf",128);
     bird = new Bird(width/4,height/2,50,50,0.2f,8,20);
     textFont(font);
@@ -32,7 +35,9 @@ public void setup()
     
     //pipe = new Pipe(200,5,height/10,40,0,width);
     pipes =  new PipeManager(384,width,150,5,height/10,40,0,width);
-
+    test = new Hitbox(100,100,100,100,1);
+    hitboxes = new ArrayList<Hitbox>();
+    hitboxes.add(new Hitbox(100,100,100,100,1));
     //pipes
     
 
@@ -41,6 +46,7 @@ public void setup()
 public void draw()
 
 {   
+    println(frameRate);
     //ellipse(100,z)
     //fill(255);
     //rect(100,100,100,100);
@@ -50,11 +56,12 @@ public void draw()
     
     background(0);
     //rect(width/2,0,100,500);
-    
+    test.display();
     //rect(width/2,800,100,280);
     pipes.move();
     pipes.display();
-    pipes.verticalMove(1);
+    pipes.verticalMove(1,100);
+    pipes.collision(hitboxes);
     //pipe.move();
     //pipe.display();
 
@@ -79,6 +86,7 @@ public void keyPressed() {
     if(key=='r')
     {
         sb.reset();
+        pipes.reset();
     }
 }
 
@@ -99,6 +107,7 @@ class Bird
         hei=hei_;
         yVel=0;
         termVel=termVel_;
+        
     }
 
     public void display()
@@ -124,6 +133,64 @@ class Bird
         //yVel*=abs(flapStrength/yVel);
         yPos+=yVel;
 
+    }
+}
+class Hitbox
+{
+    int xPos;
+    int yPos;
+    int wid;
+    int hei;
+    int type;
+    int majorAxisRadius;
+    int minorAxisRadius;
+
+    Hitbox(int xPos_, int yPos_, int wid_, int hei_, int type_)
+    {
+        xPos=xPos_;
+        yPos=yPos_;
+        wid=wid_;
+        hei=hei_;
+        type=type_;
+        if(wid<hei && type == 1)
+        {
+            minorAxisRadius=wid/2;
+            majorAxisRadius=hei/2;
+        }
+        else if(wid>hei && type == 1)
+        {
+            majorAxisRadius=wid/2;
+            minorAxisRadius=hei/2;
+        }
+        else if(wid==hei && type == 1)
+        {
+            majorAxisRadius=minorAxisRadius=wid;
+        }
+        else
+        {
+            majorAxisRadius=0;
+            minorAxisRadius=0;
+        }
+    }
+
+    public void display()
+    {
+        switch(type)
+        {
+            case 0:
+            {
+                rect(xPos,yPos,wid,hei);
+            }
+            break;
+            case 1:
+            {
+                xPos=mouseX;
+                yPos=mouseY;
+                ellipse(xPos,yPos,wid,hei);
+            }
+            break;
+        }
+        //rect(xPos,yPos,wid,hei);
     }
 }
 class Pipe 
@@ -201,7 +268,7 @@ class Pipe
         
     }
     //IN PROGRESS, DOES NOT WORK CORRECTLY AT ALL
-    public void verticalMove(int ySpeed)
+    public void verticalMove(int ySpeed, int freq)
     {
         /*boolean up=true;
         if(frameCount%120==0)
@@ -228,10 +295,10 @@ class Pipe
             startTime=millis();
         }
         int currentTime=millis();
-        if(currentTime-startTime>2000)
+        if(currentTime-startTime>3000)
         {
             //println(random(100));
-            println(go,up);
+            //println(go,up);
             if(PApplet.parseInt(random(100))%2==0)
             {
                 this.up=true;
@@ -240,7 +307,7 @@ class Pipe
             {
                 this.up=false;
             }
-            if(PApplet.parseInt(random(100))%2==0)
+            if(PApplet.parseInt(random(100))<=freq)
             {
                 this.go=true;
             }
@@ -253,20 +320,18 @@ class Pipe
             startTime=millis();
         }
         
-        if(!up && remaining>height/8 && go)
+        if(!up && remaining>height/8 && tempY>height/8 && go)
         {
             tempY+=ySpeed;
             //println("down");
         }
-        else if(remaining<=height/8)
-        {
-            remaining=500;
-        }
-        else if(up && go)
+        else if(up && go && remaining>height/8 && tempY>height/8)
         {
             //println("up");
             tempY-=ySpeed;
         }
+        
+        
         remaining=height-(tempY)-gap;
         //println(startTime,currentTime);
     }
@@ -274,10 +339,26 @@ class Pipe
     public void display()
     {
         
-        rect(xPos,0,wid,tempY);
+        rect(xPos,tempY/2,wid,tempY);
         
-        rect(xPos,height-(remaining),wid,remaining);
+        rect(xPos,height-(remaining/2),wid,remaining);
     }
+
+    public boolean collision(ArrayList<Hitbox> hitboxes)
+    {
+        for(int i=hitboxes.size()-1; i>=0; i--)
+        {
+            Hitbox quick = hitboxes.get(i);
+            if(abs(this.xPos-quick.xPos)<(quick.wid*2))
+            {
+                println("hi");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    
 }
 
 //method to move x, method to move y with visuals (like factory going up and down)
@@ -287,6 +368,7 @@ class PipeManager
     int number;
     int space;
     int wid;
+    int originalXpos;
     //Pipe quick;
 
     PipeManager(int space_, int screenWid_, int gap_, int xSpeed_, int heightMin_, int wid_, int xThreshold_, int xPos_)
@@ -294,7 +376,7 @@ class PipeManager
         pipes = new ArrayList<Pipe>();
         
         space=space_;
-        
+        originalXpos=xPos_;
         wid=screenWid_;
         number=wid/space;
         for(int i=0; i<number; i++)
@@ -326,15 +408,41 @@ class PipeManager
         }
     }
 
-    public void verticalMove(int ySpeed)
+    public void verticalMove(int ySpeed, int freq)
     {
         for(int i = pipes.size()-1; i>= 0; i--)
         {
             Pipe quick = pipes.get(i);
-            quick.verticalMove(ySpeed);
+            quick.verticalMove(ySpeed,freq);
         }
     }
-}
+
+    public void reset()
+    {
+        for(int i = pipes.size()-1; i>= 0; i--)
+        {
+            Pipe quick = pipes.get(i);
+            quick.xPos=originalXpos+space*i;
+            
+        }
+    }
+
+    public boolean collision(ArrayList<Hitbox> hitboxes)
+    {
+        for(int i = pipes.size()-1; i>= 0; i--)
+        {
+            Pipe quick = pipes.get(i);
+            if(quick.collision(hitboxes))
+            {
+                println("hi");
+                return true;
+            }
+            
+        }
+        return false;
+        
+    }
+}   
 class Score
 {
     int xPos;
@@ -363,7 +471,7 @@ class Score
         count=0;
     }
 }
-  public void settings() {  size(1920,1080);  smooth(8); }
+  public void settings() {  size(1920,1080,P2D);  smooth(8); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "Flappy" };
     if (passedArgs != null) {

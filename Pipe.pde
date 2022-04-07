@@ -73,7 +73,7 @@ class Pipe
         
     }
     //IN PROGRESS, DOES NOT WORK CORRECTLY AT ALL
-    void verticalMove(int ySpeed)
+    void verticalMove(int ySpeed, int freq)
     {
         /*boolean up=true;
         if(frameCount%120==0)
@@ -100,10 +100,10 @@ class Pipe
             startTime=millis();
         }
         int currentTime=millis();
-        if(currentTime-startTime>2000)
+        if(currentTime-startTime>3000)
         {
             //println(random(100));
-            println(go,up);
+            //println(go,up);
             if(int(random(100))%2==0)
             {
                 this.up=true;
@@ -112,7 +112,7 @@ class Pipe
             {
                 this.up=false;
             }
-            if(int(random(100))%2==0)
+            if(int(random(100))<=freq)
             {
                 this.go=true;
             }
@@ -125,20 +125,18 @@ class Pipe
             startTime=millis();
         }
         
-        if(!up && remaining>height/8 && go)
+        if(!up && remaining>height/8 && tempY>height/8 && go)
         {
             tempY+=ySpeed;
             //println("down");
         }
-        else if(remaining<=height/8)
-        {
-            remaining=500;
-        }
-        else if(up && go)
+        else if(up && go && remaining>height/8 && tempY>height/8)
         {
             //println("up");
             tempY-=ySpeed;
         }
+        
+        
         remaining=height-(tempY)-gap;
         //println(startTime,currentTime);
     }
@@ -146,10 +144,26 @@ class Pipe
     void display()
     {
         
-        rect(xPos,0,wid,tempY);
+        rect(xPos,tempY/2,wid,tempY);
         
-        rect(xPos,height-(remaining),wid,remaining);
+        rect(xPos,height-(remaining/2),wid,remaining);
     }
+
+    boolean collision(ArrayList<Hitbox> hitboxes)
+    {
+        for(int i=hitboxes.size()-1; i>=0; i--)
+        {
+            Hitbox quick = hitboxes.get(i);
+            if(abs(this.xPos-quick.xPos)<(quick.wid*2))
+            {
+                println("hi");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    
 }
 
 //method to move x, method to move y with visuals (like factory going up and down)
