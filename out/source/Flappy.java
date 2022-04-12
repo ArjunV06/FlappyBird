@@ -37,7 +37,7 @@ public void setup()
     pipes =  new PipeManager(384,width,150,5,height/10,40,0,width);
     test = new Hitbox(100,100,100,100,1);
     hitboxes = new ArrayList<Hitbox>();
-    hitboxes.add(new Hitbox(100,100,100,100,1));
+    hitboxes.add(test);
     //pipes
     
 
@@ -46,7 +46,7 @@ public void setup()
 public void draw()
 
 {   
-    println(frameRate);
+    //println(frameRate);
     //ellipse(100,z)
     //fill(255);
     //rect(100,100,100,100);
@@ -55,13 +55,32 @@ public void draw()
     
     
     background(0);
+
+    //rect(960,540,100,100);
+    //stroke(255);
+    //strokeWeight(12);
+    //line(0,height/2,960,540);
+    ////float theta=radians(45);
+    //float newX=(((960*cos(theta))+(540*sin(theta))));
+    //float newY=(((540*cos(theta))-(960*sin(theta))));
+    //println(960,540,newX,newY);
+    //rect(newX,newY,100,100);
+    //line(0,height/2,newX,newY);
     //rect(width/2,0,100,500);
     test.display();
+    //test.test();
     //rect(width/2,800,100,280);
     pipes.move();
     pipes.display();
-    pipes.verticalMove(1,100);
-    pipes.collision(hitboxes);
+    pipes.verticalMove(1,15);
+    if(pipes.collision(hitboxes))
+    {
+        rect(100,100,100,100);
+    }
+    else
+    {
+        ellipse(100,100,100,100);
+    }
     //pipe.move();
     //pipe.display();
 
@@ -70,11 +89,13 @@ public void draw()
     
     bird.display();
     bird.move();
+    
 }
 public void keyPressed() {
     if(key=='w')
     {
         sb.up();
+        //println(sin(PI/4),sin((PI/4)+radians(360)));
         
     }
     if(key=='f')
@@ -164,7 +185,8 @@ class Hitbox
         }
         else if(wid==hei && type == 1)
         {
-            majorAxisRadius=minorAxisRadius=wid;
+            majorAxisRadius=wid;
+            minorAxisRadius=wid;
         }
         else
         {
@@ -173,6 +195,11 @@ class Hitbox
         }
     }
 
+    public void test()
+    {
+        
+        //println(mouseX,mouseY);
+    }
     public void display()
     {
         switch(type)
@@ -206,6 +233,9 @@ class Pipe
     int remaining;
     int xPos;
     int startTime;
+    int yPosTop;
+    int yPosBottom;
+    int yPosTopHeight,yPosBottomHeight;
     boolean up;
     boolean go;
 
@@ -340,20 +370,94 @@ class Pipe
     {
         
         rect(xPos,tempY/2,wid,tempY);
-        
+        yPosTop = tempY/2;
+        yPosTopHeight=tempY;
         rect(xPos,height-(remaining/2),wid,remaining);
+        yPosBottom=height-(remaining/2);
+        yPosBottomHeight=remaining;
     }
 
     public boolean collision(ArrayList<Hitbox> hitboxes)
     {
+        
         for(int i=hitboxes.size()-1; i>=0; i--)
         {
             Hitbox quick = hitboxes.get(i);
-            if(abs(this.xPos-quick.xPos)<(quick.wid*2))
+            if(quick.type==1)
             {
-                println("hi");
-                return true;
+                int circleDistanceX=abs(quick.xPos-this.xPos);
+                int circleDistanceY1=abs(quick.yPos-this.yPosTop);
+                int circleDistanceY2=abs(quick.yPos-this.yPosBottom);
+                //println(circleDistanceX,circleDistanceY1,circleDistanceY2,((this.wid)/2) + quick.minorAxisRadius);
+                if(circleDistanceX > ((this.wid)/2) + quick.minorAxisRadius-20 && circleDistanceX > ((this.wid)/2) + quick.majorAxisRadius-20)
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                if(circleDistanceY1 >((this.yPosTopHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.majorAxisRadius))
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                if(circleDistanceY1 >((this.yPosBottomHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.majorAxisRadius))
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                if(circleDistanceY2 >((this.yPosTopHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.majorAxisRadius))
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                if(circleDistanceY2 >((this.yPosBottomHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.majorAxisRadius))
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                
+                if(circleDistanceY1<=(this.yPosTopHeight/2))
+                {
+                    println("t");
+                    return true;
+                    
+                }
+                if(circleDistanceY1<=(this.yPosBottomHeight/2))
+                {
+                    println("t");
+                    return true;
+                    
+                }
+                if(circleDistanceY2<=(this.yPosTopHeight/2))
+                {
+                    println("t");
+                    return true;
+                    
+                }
+                if(circleDistanceY2<=(this.yPosBottomHeight/2))
+                {
+                    println("t");
+                    return true;
+                    
+                }
+                if(circleDistanceX<=(this.wid/2))
+                {
+                    println("t");
+                    return true;
+                   
+                }
+                else
+                {
+                    return false;
+                }
+
             }
+         
+            
         }
         return false;
     }
@@ -429,14 +533,20 @@ class PipeManager
 
     public boolean collision(ArrayList<Hitbox> hitboxes)
     {
+        //boolean collide=false;
         for(int i = pipes.size()-1; i>= 0; i--)
         {
             Pipe quick = pipes.get(i);
             if(quick.collision(hitboxes))
             {
-                println("hi");
+                //println("hi");
+                
                 return true;
+                
             }
+            
+            
+            
             
         }
         return false;

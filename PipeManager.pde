@@ -65,14 +65,20 @@ class PipeManager
 
     boolean collision(ArrayList<Hitbox> hitboxes)
     {
+        //boolean collide=false;
         for(int i = pipes.size()-1; i>= 0; i--)
         {
             Pipe quick = pipes.get(i);
             if(quick.collision(hitboxes))
             {
-                println("hi");
+                //println("hi");
+                
                 return true;
+                
             }
+            
+            
+            
             
         }
         return false;

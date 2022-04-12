@@ -27,7 +27,8 @@ class Hitbox
         }
         else if(wid==hei && type == 1)
         {
-            majorAxisRadius=minorAxisRadius=wid;
+            majorAxisRadius=wid;
+            minorAxisRadius=wid;
         }
         else
         {
@@ -36,6 +37,11 @@ class Hitbox
         }
     }
 
+    void test()
+    {
+        
+        //println(mouseX,mouseY);
+    }
     void display()
     {
         switch(type)

@@ -11,6 +11,9 @@ class Pipe
     int remaining;
     int xPos;
     int startTime;
+    int yPosTop;
+    int yPosBottom;
+    int yPosTopHeight,yPosBottomHeight;
     boolean up;
     boolean go;
 
@@ -145,20 +148,94 @@ class Pipe
     {
         
         rect(xPos,tempY/2,wid,tempY);
-        
+        yPosTop = tempY/2;
+        yPosTopHeight=tempY;
         rect(xPos,height-(remaining/2),wid,remaining);
+        yPosBottom=height-(remaining/2);
+        yPosBottomHeight=remaining;
     }
 
     boolean collision(ArrayList<Hitbox> hitboxes)
     {
+        
         for(int i=hitboxes.size()-1; i>=0; i--)
         {
             Hitbox quick = hitboxes.get(i);
-            if(abs(this.xPos-quick.xPos)<(quick.wid*2))
+            if(quick.type==1)
             {
-                println("hi");
-                return true;
+                int circleDistanceX=abs(quick.xPos-this.xPos);
+                int circleDistanceY1=abs(quick.yPos-this.yPosTop);
+                int circleDistanceY2=abs(quick.yPos-this.yPosBottom);
+                //println(circleDistanceX,circleDistanceY1,circleDistanceY2,((this.wid)/2) + quick.minorAxisRadius);
+                if(circleDistanceX > ((this.wid)/2) + quick.minorAxisRadius-20 && circleDistanceX > ((this.wid)/2) + quick.majorAxisRadius-20)
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                if(circleDistanceY1 >((this.yPosTopHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.majorAxisRadius))
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                if(circleDistanceY1 >((this.yPosBottomHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.majorAxisRadius))
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                if(circleDistanceY2 >((this.yPosTopHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.majorAxisRadius))
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                if(circleDistanceY2 >((this.yPosBottomHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.majorAxisRadius))
+                {
+                    println("f");
+                    return false;
+                    
+                }
+                
+                if(circleDistanceY1<=(this.yPosTopHeight/2))
+                {
+                    println("t");
+                    return true;
+                    
+                }
+                if(circleDistanceY1<=(this.yPosBottomHeight/2))
+                {
+                    println("t");
+                    return true;
+                    
+                }
+                if(circleDistanceY2<=(this.yPosTopHeight/2))
+                {
+                    println("t");
+                    return true;
+                    
+                }
+                if(circleDistanceY2<=(this.yPosBottomHeight/2))
+                {
+                    println("t");
+                    return true;
+                    
+                }
+                if(circleDistanceX<=(this.wid/2))
+                {
+                    println("t");
+                    return true;
+                   
+                }
+                else
+                {
+                    return false;
+                }
+
             }
+         
+            
         }
         return false;
     }
