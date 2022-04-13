@@ -17,9 +17,10 @@ public class Flappy extends PApplet {
 Score sb;
 PFont font;
 Bird bird;
-//Pipe pipe;
+Pipe pipe;
 PipeManager pipes;
 Hitbox test;
+Hitbox test2;
 
 ArrayList<Hitbox> hitboxes;
 public void setup()
@@ -27,17 +28,19 @@ public void setup()
     
     rectMode(CENTER);
     font = createFont("font.ttf",128);
-    bird = new Bird(width/4,height/2,50,50,0.2f,8,20);
+    bird = new Bird(width/4,height/2,100,50,0.6f,12,40);
     textFont(font);
     sb = new Score(width/2,height/2,0);
     
     frameRate(60);
     
-    //pipe = new Pipe(200,5,height/10,40,0,width);
-    pipes =  new PipeManager(384,width,150,5,height/10,40,0,width);
-    test = new Hitbox(100,100,100,100,1);
+    pipe = new Pipe(200,5,height/10,40,0,width);
+    pipes =  new PipeManager(384,width,300,5,height/10,40,0,width);
+    test = new Hitbox(100,100,50,50,1);
+    test2 = new Hitbox(100,150,50,50,1);
     hitboxes = new ArrayList<Hitbox>();
     hitboxes.add(test);
+    hitboxes.add(test2);
     //pipes
     
 
@@ -46,6 +49,7 @@ public void setup()
 public void draw()
 
 {   
+    
     //println(frameRate);
     //ellipse(100,z)
     //fill(255);
@@ -54,8 +58,8 @@ public void draw()
     
     
     
-    background(0);
-
+    background(40);
+    
     //rect(960,540,100,100);
     //stroke(255);
     //strokeWeight(12);
@@ -67,20 +71,35 @@ public void draw()
     //rect(newX,newY,100,100);
     //line(0,height/2,newX,newY);
     //rect(width/2,0,100,500);
-    test.display();
+    
+
+    
     //test.test();
     //rect(width/2,800,100,280);
-    pipes.move();
-    pipes.display();
-    pipes.verticalMove(1,15);
-    if(pipes.collision(hitboxes))
+    /*if(frameCount%30==0)
     {
+        pipe.move();
+
+    }
+    
+    pipe.display();
+    pipe.verticalMove(1,0);
+    if(pipe.collision(hitboxes))
+    {
+        fill(255,0,0);
         rect(100,100,100,100);
     }
     else
     {
-        ellipse(100,100,100,100);
-    }
+        fill(0,255,0);
+    }*/
+    
+    pipes.move();
+    pipes.display();
+    pipes.verticalMove(1,15);
+   
+    
+   
     //pipe.move();
     //pipe.display();
 
@@ -89,8 +108,32 @@ public void draw()
     
     bird.display();
     bird.move();
+    if(superFlap)
+    {
+        bird.superFlap();
+    }
+    
+    if(!bird.inBounds())
+    {
+        pipes.reset();
+        bird.reset();
+    }
+    if(pipes.checkScore(bird))
+    {
+        sb.up();
+    }
+    test.display();
+    test2.display();
+    test.update(bird.xPos+25,bird.yPos);
+    test2.update(bird.xPos-25,bird.yPos);
+    boolean collide=pipes.collision(hitboxes);
+    if(collide)
+    {
+        rect(width/2,height/2,100,100);
+    }
     
 }
+boolean superFlap=false;
 public void keyPressed() {
     if(key=='w')
     {
@@ -101,6 +144,11 @@ public void keyPressed() {
     if(key=='f')
     {
         bird.flap();
+    }
+    if(key=='g')
+    {
+        superFlap=!superFlap;
+        
     }
         
     
@@ -115,13 +163,14 @@ public void keyPressed() {
 
 class Bird
 {
-    float xPos,yPos,gravity,flapStrength,yVel;
+    float xPos,yPos,gravity,flapStrength,yVel,originalYPos;
     int wid,hei,termVel;
 
     Bird(float xPos_, float yPos_, int wid_, int hei_, float gravity_, float flapStrength_, int termVel_)
     {
         xPos=xPos_;
         yPos=yPos_;
+        originalYPos=yPos;
         gravity=gravity_;
         flapStrength=flapStrength_;
         wid=wid_;
@@ -135,7 +184,19 @@ class Bird
     {
         ellipse(xPos,yPos,wid,hei);
     }
-
+    public void reset()
+    {
+        yPos=originalYPos;
+        yVel=0;
+    }
+    public boolean inBounds()
+    {
+        if(PApplet.parseInt(yPos)+(hei/2)>height)
+        {
+            return false;
+        }
+        return true;
+    }
     public void move()
     {
         if(yVel<termVel)
@@ -143,6 +204,7 @@ class Bird
             yVel+=gravity;
             //yVel*=abs(yVel/gravity);
         }
+        
         
         yPos+=yVel;
     }
@@ -155,6 +217,15 @@ class Bird
         yPos+=yVel;
 
     }
+    public void superFlap()
+    {
+
+        
+        yVel--;
+        yVel*=1.05f;
+        
+        yPos+=yVel;
+    }
 }
 class Hitbox
 {
@@ -163,8 +234,8 @@ class Hitbox
     int wid;
     int hei;
     int type;
-    int majorAxisRadius;
-    int minorAxisRadius;
+    int xRadius;
+    int yRadius;
 
     Hitbox(int xPos_, int yPos_, int wid_, int hei_, int type_)
     {
@@ -173,25 +244,12 @@ class Hitbox
         wid=wid_;
         hei=hei_;
         type=type_;
-        if(wid<hei && type == 1)
+        //need to implement rect rect collisions
+        if(type==1)
         {
-            minorAxisRadius=wid/2;
-            majorAxisRadius=hei/2;
-        }
-        else if(wid>hei && type == 1)
-        {
-            majorAxisRadius=wid/2;
-            minorAxisRadius=hei/2;
-        }
-        else if(wid==hei && type == 1)
-        {
-            majorAxisRadius=wid;
-            minorAxisRadius=wid;
-        }
-        else
-        {
-            majorAxisRadius=0;
-            minorAxisRadius=0;
+            xRadius=wid/2;
+            yRadius=hei/2;
+            xRadius=yRadius;
         }
     }
 
@@ -202,6 +260,9 @@ class Hitbox
     }
     public void display()
     {
+        pushStyle();
+        strokeWeight(4);
+        noFill();
         switch(type)
         {
             case 0:
@@ -211,19 +272,26 @@ class Hitbox
             break;
             case 1:
             {
-                xPos=mouseX;
-                yPos=mouseY;
                 ellipse(xPos,yPos,wid,hei);
             }
             break;
         }
+        
+    
+        popStyle();
+       
         //rect(xPos,yPos,wid,hei);
+    }
+    public void update(float xPos_,float yPos_)
+    {
+        xPos=PApplet.parseInt(xPos_);
+        yPos=PApplet.parseInt(yPos_);
     }
 }
 class Pipe 
 {
     int gap;
-    int xSpeed;
+    float xSpeed;
     int heightMin;
     int wid;
     int xThreshold;
@@ -239,7 +307,7 @@ class Pipe
     boolean up;
     boolean go;
 
-    Pipe(int gap_, int xSpeed_, int heightMin_, int wid_, int xThreshold_, int xPos_)
+    Pipe(int gap_, float xSpeed_, int heightMin_, int wid_, int xThreshold_, int xPos_)
     {
         gap=gap_;
         xSpeed=xSpeed_;
@@ -377,7 +445,69 @@ class Pipe
         yPosBottomHeight=remaining;
     }
 
-    public boolean collision(ArrayList<Hitbox> hitboxes)
+    public boolean collisions(ArrayList<Hitbox> hitboxes)
+    {
+        for(int i=hitboxes.size()-1; i>=0; i--)
+        {
+            //println(hitboxes.size());
+            Hitbox quick = hitboxes.get(i);
+            //println(i);
+            //println(quick.yPos+quick.yRadius, yPosBottom-(yPosBottomHeight/2));
+            if(quick.type==1)
+            {
+                /*
+                int circleDistanceX=abs(quick.xPos-this.xPos);
+                int circleDistanceY1=abs(quick.yPos-this.yPosTop);
+                int circleDistanceY2=abs(quick.yPos-this.yPosBottom);
+                //println(yPosTop,yPosBottom,mouseX,mouseY);
+                //println(circleDistanceX,this.xPos+quick.yRadius);
+                
+                //println(quick.yPos,yPosBottom+(yPosBottomHeight/2), (remaining-(yPosBottomHeight/2)) );
+                //println(mouseY,quick.yPos,quick.yPos+quick.yRadius,quick.yPos-quick.yRadius, quick.yRadius);
+                println(quick.yPos,quick.yPos+quick.yRadius,quick.yPos-quick.yRadius,yPosBottom-(yPosBottomHeight/2),yPosTop+(yPosTopHeight/2));
+                //check if it INSIDE the gap w/ a little bit of leeway
+                if(quick.yPos-quick.yRadius>yPosTop+(yPosTopHeight/2)-1 && quick.yPos+quick.yRadius < yPosBottom-(yPosBottomHeight/2)+1)
+                {
+                    return false;
+                }
+                else
+                {
+                    if(dist())
+                }
+                */
+
+                float xClose=constrain(quick.xPos,this.xPos-(wid/2),this.xPos+(wid/2));
+                float yCloseTop=constrain(quick.yPos,this.yPosTop-(yPosTopHeight/2),this.yPosTop+(this.yPosTopHeight/2));
+                float yCloseBottom=constrain(quick.yPos,this.yPosBottom-(yPosBottomHeight/2),this.yPosBottom+(this.yPosBottomHeight/2));
+                float distanceX=quick.xPos-xClose;
+                float distanceYTop=quick.yPos-yCloseTop;
+                float distanceYBottom=quick.yPos-yCloseBottom;
+                
+                
+                if((distanceX*distanceX)+(distanceYTop*distanceYTop)<(quick.xRadius*quick.xRadius)+2||((distanceX*distanceX)+(distanceYBottom*distanceYBottom)<(quick.xRadius*quick.xRadius)+2)) //xrad and yrad are the same now cuz im too lazy
+                {
+                    return true;
+                }
+                
+                
+
+
+                
+                
+
+                
+                
+                
+                
+                
+                
+            }
+           
+        }
+        return false;
+    }
+    /*
+    boolean collision(ArrayList<Hitbox> hitboxes)
     {
         
         for(int i=hitboxes.size()-1; i>=0; i--)
@@ -388,32 +518,32 @@ class Pipe
                 int circleDistanceX=abs(quick.xPos-this.xPos);
                 int circleDistanceY1=abs(quick.yPos-this.yPosTop);
                 int circleDistanceY2=abs(quick.yPos-this.yPosBottom);
-                //println(circleDistanceX,circleDistanceY1,circleDistanceY2,((this.wid)/2) + quick.minorAxisRadius);
-                if(circleDistanceX > ((this.wid)/2) + quick.minorAxisRadius-20 && circleDistanceX > ((this.wid)/2) + quick.majorAxisRadius-20)
+                //println(circleDistanceX,circleDistanceY1,circleDistanceY2,((this.wid)/2) + quick.yRadius);
+                if(circleDistanceX > ((this.wid)/2) + quick.yRadius-20 && circleDistanceX > ((this.wid)/2) + quick.xRadius-20)
                 {
                     println("f");
                     return false;
                     
                 }
-                if(circleDistanceY1 >((this.yPosTopHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.majorAxisRadius))
+                if(circleDistanceY1 >((this.yPosTopHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.xRadius))
                 {
                     println("f");
                     return false;
                     
                 }
-                if(circleDistanceY1 >((this.yPosBottomHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.majorAxisRadius))
+                if(circleDistanceY1 >((this.yPosBottomHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.xRadius))
                 {
                     println("f");
                     return false;
                     
                 }
-                if(circleDistanceY2 >((this.yPosTopHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.majorAxisRadius))
+                if(circleDistanceY2 >((this.yPosTopHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.xRadius))
                 {
                     println("f");
                     return false;
                     
                 }
-                if(circleDistanceY2 >((this.yPosBottomHeight/2)+quick.minorAxisRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.majorAxisRadius))
+                if(circleDistanceY2 >((this.yPosBottomHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.xRadius))
                 {
                     println("f");
                     return false;
@@ -461,7 +591,18 @@ class Pipe
         }
         return false;
     }
-
+    */
+    public boolean checkScore(Bird bird)
+    {
+        if(this.xPos-wid/2<((bird.xPos+bird.wid/2)+4) && this.xPos-wid/2>((bird.xPos+bird.wid/2)-4))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
     
 }
 
@@ -500,6 +641,7 @@ class PipeManager
         {
             Pipe quick = pipes.get(i);
             quick.move();
+            quick.xSpeed+=quick.xSpeed*0.00001f;
         }
     }
 
@@ -536,9 +678,10 @@ class PipeManager
         //boolean collide=false;
         for(int i = pipes.size()-1; i>= 0; i--)
         {
-            Pipe quick = pipes.get(i);
-            if(quick.collision(hitboxes))
+            Pipe queck = pipes.get(i);
+            if(queck.collisions(hitboxes))
             {
+                //println(quick.collisions(hitboxes));
                 //println("hi");
                 
                 return true;
@@ -551,6 +694,21 @@ class PipeManager
         }
         return false;
         
+    }
+
+    public boolean checkScore(Bird bird)
+    {
+        for(int i = pipes.size()-1; i>= 0; i--)
+        {
+            Pipe quick = pipes.get(i);
+            {
+                if(quick.checkScore(bird))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }   
 class Score
@@ -568,6 +726,7 @@ class Score
     {
         pushStyle();
         textFont(font);
+        
         String display=(""+count+"");
         text(display,xPos,yPos);
         popStyle();

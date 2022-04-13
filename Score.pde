@@ -13,6 +13,7 @@ class Score
     {
         pushStyle();
         textFont(font);
+        
         String display=(""+count+"");
         text(display,xPos,yPos);
         popStyle();

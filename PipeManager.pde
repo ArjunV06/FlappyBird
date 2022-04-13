@@ -32,6 +32,7 @@ class PipeManager
         {
             Pipe quick = pipes.get(i);
             quick.move();
+            quick.xSpeed+=quick.xSpeed*0.00001;
         }
     }
 
@@ -68,9 +69,10 @@ class PipeManager
         //boolean collide=false;
         for(int i = pipes.size()-1; i>= 0; i--)
         {
-            Pipe quick = pipes.get(i);
-            if(quick.collision(hitboxes))
+            Pipe queck = pipes.get(i);
+            if(queck.collisions(hitboxes))
             {
+                //println(quick.collisions(hitboxes));
                 //println("hi");
                 
                 return true;
@@ -83,5 +85,20 @@ class PipeManager
         }
         return false;
         
+    }
+
+    boolean checkScore(Bird bird)
+    {
+        for(int i = pipes.size()-1; i>= 0; i--)
+        {
+            Pipe quick = pipes.get(i);
+            {
+                if(quick.checkScore(bird))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }   

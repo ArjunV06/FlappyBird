@@ -5,8 +5,8 @@ class Hitbox
     int wid;
     int hei;
     int type;
-    int majorAxisRadius;
-    int minorAxisRadius;
+    int xRadius;
+    int yRadius;
 
     Hitbox(int xPos_, int yPos_, int wid_, int hei_, int type_)
     {
@@ -15,25 +15,12 @@ class Hitbox
         wid=wid_;
         hei=hei_;
         type=type_;
-        if(wid<hei && type == 1)
+        //need to implement rect rect collisions
+        if(type==1)
         {
-            minorAxisRadius=wid/2;
-            majorAxisRadius=hei/2;
-        }
-        else if(wid>hei && type == 1)
-        {
-            majorAxisRadius=wid/2;
-            minorAxisRadius=hei/2;
-        }
-        else if(wid==hei && type == 1)
-        {
-            majorAxisRadius=wid;
-            minorAxisRadius=wid;
-        }
-        else
-        {
-            majorAxisRadius=0;
-            minorAxisRadius=0;
+            xRadius=wid/2;
+            yRadius=hei/2;
+            xRadius=yRadius;
         }
     }
 
@@ -44,6 +31,9 @@ class Hitbox
     }
     void display()
     {
+        pushStyle();
+        strokeWeight(4);
+        noFill();
         switch(type)
         {
             case 0:
@@ -53,12 +43,19 @@ class Hitbox
             break;
             case 1:
             {
-                xPos=mouseX;
-                yPos=mouseY;
                 ellipse(xPos,yPos,wid,hei);
             }
             break;
         }
+        
+    
+        popStyle();
+       
         //rect(xPos,yPos,wid,hei);
+    }
+    void update(float xPos_,float yPos_)
+    {
+        xPos=int(xPos_);
+        yPos=int(yPos_);
     }
 }
