@@ -53,7 +53,7 @@ public void setup()
     distantLightning.Initialize(100,100);
     rectMode(CENTER);
     font = createFont("font.ttf",128);
-    bird = new Bird(width/4,height/2,91,40,0.6f,12,40,dronemove,1,5,273,600);
+    bird = new Bird(width/4,height/2,91,60,0.6f,12,40,dronemove,1,5,273,900);
     textFont(font);
     sb = new Score(width/2,height/2,0);
     
@@ -61,12 +61,12 @@ public void setup()
     
     pipe = new Pipe(200,5,height/10,40,0,width);
     pipes =  new PipeManager(384,width,300,5,height/10,40,0,width);
-    test = new Hitbox(100,100,50,50,1);
-    test2 = new Hitbox(100,150,30,30,1);
+    test = new Hitbox(100,100,64,64,1);
+    //test2 = new Hitbox(100,150,30,30,1);
     test3 = new Hitbox(100,150,20,20,1);
     hitboxes = new ArrayList<Hitbox>();
     hitboxes.add(test);
-    hitboxes.add(test2);
+    //hitboxes.add(test2);
     hitboxes.add(test3);
     photo = loadImage("background.png");
     photo.resize(width,height);
@@ -111,9 +111,9 @@ public void draw()
     }
     
     
-    test.update(bird.xPos-15,bird.yPos-18);
-    test2.update(bird.xPos+10,bird.yPos-18);
-    test3.update(bird.xPos-5,bird.yPos+8);
+    test.update(bird.xPos-10,bird.yPos-18);
+    //test2.update(bird.xPos+10,bird.yPos-18);
+    test3.update(bird.xPos-5,bird.yPos+18);
     boolean collide=pipes.collision(hitboxes);
     if(collide)
     {
@@ -122,7 +122,9 @@ public void draw()
         sb.reset();
     }
    
-    
+    //test.display();
+    //test2.display();
+    //test3.display();
     
     
 }
