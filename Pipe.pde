@@ -75,27 +75,10 @@ class Pipe
 
         
     }
-    //IN PROGRESS, DOES NOT WORK CORRECTLY AT ALL
+    
     void verticalMove(int ySpeed, int freq)
     {
-        /*boolean up=true;
-        if(frameCount%120==0)
-        {
-            if(random(1)>0.5)
-            {
-                println("switch");
-                up=true;
-            }
-            else
-            {
-                println("switch");
-                up=false;
-            }
-        }
       
-
-        
-        */
 
         
         if(startTime==0)
@@ -105,8 +88,7 @@ class Pipe
         int currentTime=millis();
         if(currentTime-startTime>3000)
         {
-            //println(random(100));
-            //println(go,up);
+            
             if(int(random(100))%2==0)
             {
                 this.up=true;
@@ -159,32 +141,12 @@ class Pipe
     {
         for(int i=hitboxes.size()-1; i>=0; i--)
         {
-            //println(hitboxes.size());
+            
             Hitbox quick = hitboxes.get(i);
-            //println(i);
-            //println(quick.yPos+quick.yRadius, yPosBottom-(yPosBottomHeight/2));
+          
             if(quick.type==1)
             {
-                /*
-                int circleDistanceX=abs(quick.xPos-this.xPos);
-                int circleDistanceY1=abs(quick.yPos-this.yPosTop);
-                int circleDistanceY2=abs(quick.yPos-this.yPosBottom);
-                //println(yPosTop,yPosBottom,mouseX,mouseY);
-                //println(circleDistanceX,this.xPos+quick.yRadius);
-                
-                //println(quick.yPos,yPosBottom+(yPosBottomHeight/2), (remaining-(yPosBottomHeight/2)) );
-                //println(mouseY,quick.yPos,quick.yPos+quick.yRadius,quick.yPos-quick.yRadius, quick.yRadius);
-                println(quick.yPos,quick.yPos+quick.yRadius,quick.yPos-quick.yRadius,yPosBottom-(yPosBottomHeight/2),yPosTop+(yPosTopHeight/2));
-                //check if it INSIDE the gap w/ a little bit of leeway
-                if(quick.yPos-quick.yRadius>yPosTop+(yPosTopHeight/2)-1 && quick.yPos+quick.yRadius < yPosBottom-(yPosBottomHeight/2)+1)
-                {
-                    return false;
-                }
-                else
-                {
-                    if(dist())
-                }
-                */
+              
 
                 float xClose=constrain(quick.xPos,this.xPos-(wid/2),this.xPos+(wid/2));
                 float yCloseTop=constrain(quick.yPos,this.yPosTop-(yPosTopHeight/2),this.yPosTop+(this.yPosTopHeight/2));
@@ -216,92 +178,7 @@ class Pipe
         }
         return false;
     }
-    /*
-    boolean collision(ArrayList<Hitbox> hitboxes)
-    {
-        
-        for(int i=hitboxes.size()-1; i>=0; i--)
-        {
-            Hitbox quick = hitboxes.get(i);
-            if(quick.type==1)
-            {
-                int circleDistanceX=abs(quick.xPos-this.xPos);
-                int circleDistanceY1=abs(quick.yPos-this.yPosTop);
-                int circleDistanceY2=abs(quick.yPos-this.yPosBottom);
-                //println(circleDistanceX,circleDistanceY1,circleDistanceY2,((this.wid)/2) + quick.yRadius);
-                if(circleDistanceX > ((this.wid)/2) + quick.yRadius-20 && circleDistanceX > ((this.wid)/2) + quick.xRadius-20)
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                if(circleDistanceY1 >((this.yPosTopHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.xRadius))
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                if(circleDistanceY1 >((this.yPosBottomHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.xRadius))
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                if(circleDistanceY2 >((this.yPosTopHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.xRadius))
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                if(circleDistanceY2 >((this.yPosBottomHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.xRadius))
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                
-                if(circleDistanceY1<=(this.yPosTopHeight/2))
-                {
-                    println("t");
-                    return true;
-                    
-                }
-                if(circleDistanceY1<=(this.yPosBottomHeight/2))
-                {
-                    println("t");
-                    return true;
-                    
-                }
-                if(circleDistanceY2<=(this.yPosTopHeight/2))
-                {
-                    println("t");
-                    return true;
-                    
-                }
-                if(circleDistanceY2<=(this.yPosBottomHeight/2))
-                {
-                    println("t");
-                    return true;
-                    
-                }
-                if(circleDistanceX<=(this.wid/2))
-                {
-                    println("t");
-                    return true;
-                   
-                }
-                else
-                {
-                    return false;
-                }
-
-            }
-         
-            
-        }
-        return false;
-    }
-    */
+   
     boolean checkScore(Bird bird)
     {
         if(this.xPos-wid/2<((bird.xPos+bird.wid/2)+4) && this.xPos-wid/2>((bird.xPos+bird.wid/2)-4))
@@ -316,4 +193,3 @@ class Pipe
     
 }
 
-//method to move x, method to move y with visuals (like factory going up and down)
