@@ -21,14 +21,39 @@ Pipe pipe;
 PipeManager pipes;
 Hitbox test;
 Hitbox test2;
+Hitbox test3;
+int lightningTrigger1=0;
+int lightningTrigger2=0;
+int lightningTrigger3=0;
+int lightningTrigger4=0;
+int lightningTrigger5=0;
+int lightningTrigger6=0;
+BackgroundAnimation bubbleMaker3 = new BackgroundAnimation(18, "bubblemaker");
+BackgroundAnimation bubbleMaker2 = new BackgroundAnimation(18,"bubblemaker");
+BackgroundAnimation bubbleMaker = new BackgroundAnimation(18,"bubblemaker");
+BackgroundAnimation distantLightning = new BackgroundAnimation(18, "distantlightning");
+BackgroundAnimation largeLightning = new BackgroundAnimation(18,"largelightning");
+BackgroundAnimation smallLightning = new BackgroundAnimation(18, "smalllightning");
+PImage photo;
+
+
 
 ArrayList<Hitbox> hitboxes;
 public void setup()
 {
-    
+  
+    PImage dronemove = loadImage("dronemove.png");
+   
+  
+    bubbleMaker3.Initialize(16,40);
+    bubbleMaker2.Initialize(16,40);
+    bubbleMaker.Initialize(16,40);
+    largeLightning.Initialize(320,240);
+    smallLightning.Initialize(160,160);
+    distantLightning.Initialize(100,100);
     rectMode(CENTER);
     font = createFont("font.ttf",128);
-    bird = new Bird(width/4,height/2,100,50,0.6f,12,40);
+    bird = new Bird(width/4,height/2,91,40,0.6f,12,40,dronemove,1,5,273,600);
     textFont(font);
     sb = new Score(width/2,height/2,0);
     
@@ -37,11 +62,15 @@ public void setup()
     pipe = new Pipe(200,5,height/10,40,0,width);
     pipes =  new PipeManager(384,width,300,5,height/10,40,0,width);
     test = new Hitbox(100,100,50,50,1);
-    test2 = new Hitbox(100,150,50,50,1);
+    test2 = new Hitbox(100,150,30,30,1);
+    test3 = new Hitbox(100,150,20,20,1);
     hitboxes = new ArrayList<Hitbox>();
     hitboxes.add(test);
     hitboxes.add(test2);
-    //pipes
+    hitboxes.add(test3);
+    photo = loadImage("background.png");
+    photo.resize(width,height);
+  
     
 
 }
@@ -50,49 +79,9 @@ public void draw()
 
 {   
     
-    //println(frameRate);
-    //ellipse(100,z)
-    //fill(255);
-    //rect(100,100,100,100);
-    //rect(width-40,60,40,123);
-    
-    
-    
-    background(40);
-    
-    //rect(960,540,100,100);
-    //stroke(255);
-    //strokeWeight(12);
-    //line(0,height/2,960,540);
-    ////float theta=radians(45);
-    //float newX=(((960*cos(theta))+(540*sin(theta))));
-    //float newY=(((540*cos(theta))-(960*sin(theta))));
-    //println(960,540,newX,newY);
-    //rect(newX,newY,100,100);
-    //line(0,height/2,newX,newY);
-    //rect(width/2,0,100,500);
-    
-
-    
-    //test.test();
-    //rect(width/2,800,100,280);
-    /*if(frameCount%30==0)
-    {
-        pipe.move();
-
-    }
-    
-    pipe.display();
-    pipe.verticalMove(1,0);
-    if(pipe.collision(hitboxes))
-    {
-        fill(255,0,0);
-        rect(100,100,100,100);
-    }
-    else
-    {
-        fill(0,255,0);
-    }*/
+ 
+    backgroundDraw();
+   
     
     pipes.move();
     pipes.display();
@@ -100,10 +89,7 @@ public void draw()
    
     
    
-    //pipe.move();
-    //pipe.display();
-
-    //rect(100,100,100,100);
+  
     sb.display();
     
     bird.display();
@@ -117,20 +103,27 @@ public void draw()
     {
         pipes.reset();
         bird.reset();
+        sb.reset();
     }
     if(pipes.checkScore(bird))
     {
         sb.up();
     }
-    test.display();
-    test2.display();
-    test.update(bird.xPos+25,bird.yPos);
-    test2.update(bird.xPos-25,bird.yPos);
+    
+    
+    test.update(bird.xPos-15,bird.yPos-18);
+    test2.update(bird.xPos+10,bird.yPos-18);
+    test3.update(bird.xPos-5,bird.yPos+8);
     boolean collide=pipes.collision(hitboxes);
     if(collide)
     {
-        rect(width/2,height/2,100,100);
+        pipes.reset();
+        bird.reset();
+        sb.reset();
     }
+   
+    
+    
     
 }
 boolean superFlap=false;
@@ -157,17 +150,153 @@ public void keyPressed() {
         sb.reset();
         pipes.reset();
     }
+    if(key=='t')
+    {
+        test.display();
+        test2.display();
+        test3.display();
+    }
 }
 
 
+public void backgroundDraw()
+{
+  image(photo, 0, 0);
+  
+  if(largeLightning.Running()==false)
+  {
+    lightningTrigger1=(int)random(100);
+    largeLightning.DisplayStatic(200,620);
+  }  
+  if(smallLightning.Running()==false)
+  {
+    lightningTrigger2=(int)random(100);
+    smallLightning.DisplayStatic(1700,680);
+  }
 
+  if(distantLightning.Running()==false)
+  {
+    lightningTrigger3=(int)random(100);
+    distantLightning.DisplayStatic(815,475);
+  }
+  if(bubbleMaker.Running()==false)
+  {
+    lightningTrigger4=(int)random(100);
+    bubbleMaker.DisplayStatic(1100,800);
+  }
+  if(bubbleMaker2.Running()==false)
+  {
+    lightningTrigger5=(int)random(70);
+    bubbleMaker2.DisplayStatic(1080,790);
+  }
+  if(bubbleMaker3.Running()==false)
+  {
+    lightningTrigger6=(int)random(90);
+    bubbleMaker3.DisplayStatic(1120,790);
+  }
+    
+  
+  if(lightningTrigger1==1)
+  {
+    largeLightning.DisplayAnimation(200,620,6);
+  }
+  
+  if(lightningTrigger2==2)
+  {
+    smallLightning.DisplayAnimation(1700,680,6);
+  }
+
+  if(lightningTrigger3==3)
+  {
+    distantLightning.DisplayAnimation(815,475,6);
+  }
+  
+  if(lightningTrigger4==4)
+  {
+    bubbleMaker.DisplayAnimation(1100,800,4);
+  }
+  if(lightningTrigger5==5)
+  {
+    bubbleMaker2.DisplayAnimation(1080,790,4);
+  }
+  if(lightningTrigger6==6)
+  {
+    bubbleMaker3.DisplayAnimation(1120,790,4);
+  }
+
+}
+
+class BackgroundAnimation
+{
+    int frameNumberAll;
+    String nameAll;
+    int counter;
+    BackgroundAnimation(int frameNumber, String name)
+    {
+        frameNumberAll=frameNumber;
+        nameAll=name;
+        counter=0;
+    }
+
+    PImage[] imageMatrix = new PImage[20];
+    public void Initialize(int sizeX, int sizeY)
+    {
+        
+        for(int i=0; i<frameNumberAll; i++)
+        {
+            PImage temp;
+            temp=loadImage(nameAll+""+i+".png");
+            temp.resize(sizeX,sizeY);
+            imageMatrix[i]=temp;
+        }
+    }
+    public void DisplayAnimation(int posX, int posY,int fps)
+    {
+        //println(counter);
+        if(counter==0){image(imageMatrix[counter],posX,posY);}
+        else{image(imageMatrix[counter-1],posX,posY);}
+        if((float)frameCount%(float)fps==0)
+        {
+            if(counter<frameNumberAll)
+            {
+                counter++;
+                //return true;
+            }
+            else 
+            {
+                counter=0;
+                //return false;
+
+            }
+        }
+    }
+    public void DisplayStatic(int posX, int posY)
+    {
+        image(imageMatrix[17],posX,posY);
+        
+    }
+    public boolean Running()
+    {
+        if(counter!=0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
 class Bird
 {
     float xPos,yPos,gravity,flapStrength,yVel,originalYPos;
-    int wid,hei,termVel;
+    int wid,hei,termVel,counter;
+    PImage spriteSheet;
+    PImage[] sprites; 
 
-    Bird(float xPos_, float yPos_, int wid_, int hei_, float gravity_, float flapStrength_, int termVel_)
+    Bird(float xPos_, float yPos_, int wid_, int hei_, float gravity_, float flapStrength_, int termVel_, PImage spriteSheet_, int xDim, int yDim, int sheetWid, int sheetHei)
     {
+        counter=0;
         xPos=xPos_;
         yPos=yPos_;
         originalYPos=yPos;
@@ -177,17 +306,45 @@ class Bird
         hei=hei_;
         yVel=0;
         termVel=termVel_;
+        spriteSheet=spriteSheet_;
+        spriteSheet.resize(sheetWid,sheetHei);
+        sprites = new PImage[xDim*yDim];
+        int w=spriteSheet.width/xDim;
+        int h=spriteSheet.height/yDim;
+        for(int i=0;i<sprites.length;i++)
+        {
+            int x = i%xDim*w;
+            int y = i%yDim*h;
+            sprites[i]=spriteSheet.get(x,y,w,h);
+            println(sprites[i].width,sprites[i].height);
+        }
+        
         
     }
 
     public void display()
     {
-        ellipse(xPos,yPos,wid,hei);
+        pushStyle();
+        imageMode(CENTER);
+        
+        /*if(frameCount%6==0 && frameCount<sprites.length)
+        {
+            counter++;
+        }
+        else if(frameCount>=sprites.length && frameCount%6==0)
+        {
+            counter=0;
+        }*/
+        
+        image(sprites[counter],xPos,yPos);
+        println(counter,sprites.length);
+        popStyle();
     }
     public void reset()
     {
         yPos=originalYPos;
         yVel=0;
+        counter=0;
     }
     public boolean inBounds()
     {
@@ -199,6 +356,18 @@ class Bird
     }
     public void move()
     {
+        if(frameCount%6==0)
+        {
+            if(counter<4)
+            {
+                counter++;
+            }
+            else
+            {
+                counter=0;
+            }
+        }
+        
         if(yVel<termVel)
         {
             yVel+=gravity;
@@ -365,27 +534,10 @@ class Pipe
 
         
     }
-    //IN PROGRESS, DOES NOT WORK CORRECTLY AT ALL
+    
     public void verticalMove(int ySpeed, int freq)
     {
-        /*boolean up=true;
-        if(frameCount%120==0)
-        {
-            if(random(1)>0.5)
-            {
-                println("switch");
-                up=true;
-            }
-            else
-            {
-                println("switch");
-                up=false;
-            }
-        }
       
-
-        
-        */
 
         
         if(startTime==0)
@@ -395,8 +547,7 @@ class Pipe
         int currentTime=millis();
         if(currentTime-startTime>3000)
         {
-            //println(random(100));
-            //println(go,up);
+            
             if(PApplet.parseInt(random(100))%2==0)
             {
                 this.up=true;
@@ -449,32 +600,12 @@ class Pipe
     {
         for(int i=hitboxes.size()-1; i>=0; i--)
         {
-            //println(hitboxes.size());
+            
             Hitbox quick = hitboxes.get(i);
-            //println(i);
-            //println(quick.yPos+quick.yRadius, yPosBottom-(yPosBottomHeight/2));
+          
             if(quick.type==1)
             {
-                /*
-                int circleDistanceX=abs(quick.xPos-this.xPos);
-                int circleDistanceY1=abs(quick.yPos-this.yPosTop);
-                int circleDistanceY2=abs(quick.yPos-this.yPosBottom);
-                //println(yPosTop,yPosBottom,mouseX,mouseY);
-                //println(circleDistanceX,this.xPos+quick.yRadius);
-                
-                //println(quick.yPos,yPosBottom+(yPosBottomHeight/2), (remaining-(yPosBottomHeight/2)) );
-                //println(mouseY,quick.yPos,quick.yPos+quick.yRadius,quick.yPos-quick.yRadius, quick.yRadius);
-                println(quick.yPos,quick.yPos+quick.yRadius,quick.yPos-quick.yRadius,yPosBottom-(yPosBottomHeight/2),yPosTop+(yPosTopHeight/2));
-                //check if it INSIDE the gap w/ a little bit of leeway
-                if(quick.yPos-quick.yRadius>yPosTop+(yPosTopHeight/2)-1 && quick.yPos+quick.yRadius < yPosBottom-(yPosBottomHeight/2)+1)
-                {
-                    return false;
-                }
-                else
-                {
-                    if(dist())
-                }
-                */
+              
 
                 float xClose=constrain(quick.xPos,this.xPos-(wid/2),this.xPos+(wid/2));
                 float yCloseTop=constrain(quick.yPos,this.yPosTop-(yPosTopHeight/2),this.yPosTop+(this.yPosTopHeight/2));
@@ -506,92 +637,7 @@ class Pipe
         }
         return false;
     }
-    /*
-    boolean collision(ArrayList<Hitbox> hitboxes)
-    {
-        
-        for(int i=hitboxes.size()-1; i>=0; i--)
-        {
-            Hitbox quick = hitboxes.get(i);
-            if(quick.type==1)
-            {
-                int circleDistanceX=abs(quick.xPos-this.xPos);
-                int circleDistanceY1=abs(quick.yPos-this.yPosTop);
-                int circleDistanceY2=abs(quick.yPos-this.yPosBottom);
-                //println(circleDistanceX,circleDistanceY1,circleDistanceY2,((this.wid)/2) + quick.yRadius);
-                if(circleDistanceX > ((this.wid)/2) + quick.yRadius-20 && circleDistanceX > ((this.wid)/2) + quick.xRadius-20)
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                if(circleDistanceY1 >((this.yPosTopHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.xRadius))
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                if(circleDistanceY1 >((this.yPosBottomHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.xRadius))
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                if(circleDistanceY2 >((this.yPosTopHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosTopHeight/2)+quick.xRadius))
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                if(circleDistanceY2 >((this.yPosBottomHeight/2)+quick.yRadius)&&circleDistanceY1 >((this.yPosBottomHeight/2)+quick.xRadius))
-                {
-                    println("f");
-                    return false;
-                    
-                }
-                
-                if(circleDistanceY1<=(this.yPosTopHeight/2))
-                {
-                    println("t");
-                    return true;
-                    
-                }
-                if(circleDistanceY1<=(this.yPosBottomHeight/2))
-                {
-                    println("t");
-                    return true;
-                    
-                }
-                if(circleDistanceY2<=(this.yPosTopHeight/2))
-                {
-                    println("t");
-                    return true;
-                    
-                }
-                if(circleDistanceY2<=(this.yPosBottomHeight/2))
-                {
-                    println("t");
-                    return true;
-                    
-                }
-                if(circleDistanceX<=(this.wid/2))
-                {
-                    println("t");
-                    return true;
-                   
-                }
-                else
-                {
-                    return false;
-                }
-
-            }
-         
-            
-        }
-        return false;
-    }
-    */
+   
     public boolean checkScore(Bird bird)
     {
         if(this.xPos-wid/2<((bird.xPos+bird.wid/2)+4) && this.xPos-wid/2>((bird.xPos+bird.wid/2)-4))
@@ -606,7 +652,6 @@ class Pipe
     
 }
 
-//method to move x, method to move y with visuals (like factory going up and down)
 class PipeManager
 {
     ArrayList<Pipe> pipes;

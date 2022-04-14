@@ -51,7 +51,7 @@ void setup()
     hitboxes = new ArrayList<Hitbox>();
     hitboxes.add(test);
     hitboxes.add(test2);
-    hitboxes,add(test3);
+    hitboxes.add(test3);
     photo = loadImage("background.png");
     photo.resize(width,height);
   
