@@ -5,16 +5,16 @@ class Score
     int count;
     Score(int xPos_, int yPos_, int count_)
     {
-        xPos=xPos_;
-        yPos=yPos_;
-        count=count_;
+        xPos = xPos_;
+        yPos = yPos_;
+        count = count_;
     }
     void display()
     {
         pushStyle();
         textFont(font);
         
-        String display=(""+count+"");
+        String display = ("" + count + "");
         text(display,xPos,yPos);
         popStyle();
     }
@@ -24,6 +24,6 @@ class Score
     }
     void reset()
     {
-        count=0;
+        count = 0;
     }
 }
